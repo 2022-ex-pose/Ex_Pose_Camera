@@ -445,36 +445,50 @@ const recentSearch = [
 const FilterOption = [
     {
         id: 1,
-        name: "즐겨찾기"
+        name: "즐겨찾기",
+        category: "my"
     },
 
     {
         id:2,
-        name: "추천"
+        name: "추천",
+        category: "rec"
     },
 
     {
         id: 3,
-        name: "서기"
+        name: "selfie",
+        category: "selfie"
     },
 
     {
         id: 4,
-        name: "앉기"
+        name: "상반신",
+        category: "half"
     },
 
     {
         id: 5,
-        name: "상반신"
+        name: "전신",
+        categoty: "whole"
     },
 
     {
         id: 6,
-        name: "혼자"
+        name: "앉기",
+        category: "sit"
     },
+
     {
         id: 7,
-        name: "같이"
+        name: "둘이서",
+        category: "two"
+    },
+    
+    {
+        id: 8,
+        name: "여럿이",
+        category: "many"
     }
 ]
 

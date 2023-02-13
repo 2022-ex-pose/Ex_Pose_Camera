@@ -20,7 +20,7 @@ const Walkthrough = ({route, navigation}) => {
     const {token} = route.params;
 
     //User정보 호출 완료
-    const userInfo = () => {
+    const userNameInfo = () => {
 
         const BaseUrl = "http://52.79.250.39:8080";
         const userInfoApi = `${BaseUrl}/user/me`;
@@ -40,7 +40,7 @@ const Walkthrough = ({route, navigation}) => {
                 .catch(console.error)
     }
 
-    userInfo();
+    userNameInfo();
 
     const scrollX = React.useRef(new Animated.Value(0)).current;
 
@@ -118,7 +118,7 @@ const Walkthrough = ({route, navigation}) => {
                             ...FONTS.h3
                         }}
                         onPress={() => {
-                            navigation.navigate("Home")
+                            navigation.navigate("Home", {token: token})
                     }}
                     />
                     {/*원래 로그인 이었던 것*/}

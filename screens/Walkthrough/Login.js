@@ -53,7 +53,7 @@ class Login extends React.Component {
       .then((res) => res.json())
       .then(res => {
       console.log(res)
-      const access_token = res.data.jwtToken
+      const token = res.data.jwtToken
       console.log(token)
       //2/13 토큰 전달 완료
       this.props.navigation.navigate('Walkthrough', {token: token});

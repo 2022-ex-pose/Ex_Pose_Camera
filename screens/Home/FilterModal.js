@@ -17,9 +17,13 @@ import { FlatList } from 'react-native-gesture-handler';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const frameUrl = 'http://52.79.250.39:8080/frame?category=';
+const BaseUrl = "http://52.79.250.39:8080";
+const userRecListApi = `${BaseUrl}/frame/recommend`;
+const userMyListApi = `${BaseUrl}/frame/like`
+const frameUrl = `${BaseUrl}/frame?category=`;
 
-const FilterModal = ({ isVisible, onClose }) => {
+// 토큰 받기 {token}
+const FilterModal = ({ isVisible, onClose, token}) => {
 
   const modalAnimatedValue = React.useRef(new Animated.Value(0)).current
   const [showFilterModal, setShowFilterModal] = React.useState(isVisible)
@@ -28,6 +32,9 @@ const FilterModal = ({ isVisible, onClose }) => {
   //selected 시도중
   const [selectedFrameId, setSelectedFrameId] = React.useState('half');
   //const selectedframeList = React.useState(null);
+
+  // 토큰 전달 확인
+  // console.log(`filter ${token}`)
 
   // useEffect(()=> {
   // frameList(selectedFrameId)
@@ -67,11 +74,47 @@ const FilterModal = ({ isVisible, onClose }) => {
     },[]);
 
     const getAllFrames = (selectedCategory) => {
-      fetch(`${frameUrl}${selectedCategory}`)
+
+      //추천 프레임 리스트 호출
+      if (selectedCategory=="rec") {
+        fetch(`${userRecListApi}`,{
+          method : "GET",
+          headers : {
+              Authorization : `Bearer ${token}`
+          }
+          })
       .then((res) => res.json())
-      .then((resJson)=>{setData(resJson.data)})
+      .then((resJson)=>{setData(resJson.data)
+      //추천api호출 확인
+      // console.log(resJson)
+    })
       .catch(console.error)
       .finally(() => setIsLoading(false));
+      }
+
+      if (selectedCategory=="my") {
+        fetch(`${userMyListApi}`,{
+          method : "GET",
+          headers : {
+              Authorization : `Bearer ${token}`
+          }
+          })
+      .then((res) => res.json())
+      .then((resJson)=>{setData(resJson.data)
+      //좋아요 api 호출 확인
+      // console.log(resJson)
+    })
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
+      }
+
+      else {
+        fetch(`${frameUrl}${selectedCategory}`)
+        .then((res) => res.json())
+        .then((resJson)=>{setData(resJson.data)})
+        .catch(console.error)
+        .finally(() => setIsLoading(false));
+      }
 
     }
 

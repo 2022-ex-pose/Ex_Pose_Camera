@@ -35,15 +35,19 @@ import Animated,{
   withTiming
 } from "react-native-reanimated";
 import { FlatList } from 'react-native-gesture-handler';
+import {useRoute} from "@react-navigation/native";
 
-const Home = ({ navigation }) => {
+const Home = ({ route, navigation }) => {
 
   //const [selectOption, setSelectOption] = React.useState(constants.scan_product_option.camera)
   const devices = useCameraDevices()
   const device = devices.back
   const [showFilterModal, setShowFilterModal] = React.useState(false)
+  const {token} = route.params;
+
+  //토큰 전달 확인
+  // console.log(`camera ${token}`)
   
-   
   React.useEffect(() => {
     if (Platform.OS === 'android') {
     const requestCameraPermission = async () => {
@@ -179,6 +183,8 @@ const Home = ({ navigation }) => {
       <FilterModal
       isVisible={showFilterModal}
       onClose={() => setShowFilterModal(false)}
+      //자식 FilterModal로 token전달
+      token={token}
       />}
 
       {/*Header*/}
@@ -187,9 +193,7 @@ const Home = ({ navigation }) => {
       {renderCamera()}
 
       {renderFooter()}
-
-      
-      
+   
     </View>
   )
 }
