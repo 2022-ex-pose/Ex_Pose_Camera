@@ -9,9 +9,38 @@ import {
 import { TextButton } from "../../components"; 
 import { COLORS, SIZES, constants, FONTS } from "../../constants";
 import Walkthrough1 from './Walkthrough1';
+import {useRoute} from "@react-navigation/native";
 
 
-const Walkthrough = ({navigation}) => {
+const Walkthrough = ({route, navigation}) => {
+    //API정보 이용 시
+    const [userName, setUserName] = React.useState("");
+
+    //토큰 전달 완료
+    const {token} = route.params;
+
+    //User정보 호출 완료
+    const userInfo = () => {
+
+        const BaseUrl = "http://52.79.250.39:8080";
+        const userInfoApi = `${BaseUrl}/user/me`;
+
+        //사용자 데이터 fetch 정보 호출 완료
+        fetch(`${userInfoApi}`, {
+                method : "GET",
+                headers : {
+                    Authorization : `Bearer ${token}`
+                }
+                }) 
+                .then((res) => res.json())
+                .then(res => {
+                setUserName(res.nickname)
+                console.log(userName)
+                })
+                .catch(console.error)
+    }
+
+    userInfo();
 
     const scrollX = React.useRef(new Animated.Value(0)).current;
 
@@ -111,12 +140,16 @@ const Walkthrough = ({navigation}) => {
         )
     }
     return (
+       
         <View
             style={{
                 flex: 1,
                 backgroundColor: COLORS.light
             }}
         >
+            <Text>
+                {userName}님 반갑습니다!
+            </Text>
             <Animated.FlatList
                 data={constants.walkthrough}
                 keyExtractor={(item) => item.id}
@@ -183,10 +216,9 @@ const Walkthrough = ({navigation}) => {
                     )
                 }}
             />
-
             {renderFooter()}
         </View>
     )
 }
-
+  
 export default Walkthrough;

@@ -6,14 +6,16 @@ import {
   Linking
 } from 'react-native';
 import { WebView } from 'react-native-webview';
+import {useRoute} from "@react-navigation/native";
 
 class Login extends React.Component {
-
+  
   constructor(props){
     super(props);
   }
 
   render() {
+  
   return (
     <View style={{flex:1}}>
         <WebView
@@ -28,10 +30,10 @@ class Login extends React.Component {
  }
 
     handleWebViewNavigationStateChange = (newNavState, props) => {
+
     const {url} = newNavState;
     var split = url.split("code=");
     const code = split[1];
-  
 
     const CLIENT_ID = "560569442d62d727bea35653d92e561f";
     const BaseUrl = "http://52.79.250.39:8080";
@@ -41,40 +43,25 @@ class Login extends React.Component {
     const userInfoApi = `${BaseUrl}/user/me`;
 
     if(url.includes('code=')){
-      // const [data, setData] = React.useState([]);
-
-      console.log(url);
-      console.log(code);
+      // 확인용 코드, 잘 되는거 확인함
+      // console.log(url);
+      // console.log(code);
 
       //전체 데이터 확인 및 access token 저장용 2/11 토큰 불러내기 성공
+      
       fetch(`${KAKAO_AUTH_URL}`)
       .then((res) => res.json())
       .then(res => {
       console.log(res)
-      const token = res.data.jwtToken
+      const access_token = res.data.jwtToken
       console.log(token)
-
-      //사용자 데이터 fetch 정보 호출 완료
-      fetch(`${userInfoApi}`, {
-          method : "GET",
-          headers : {
-            Authorization : `Bearer ${token}`
-          }
-        }) 
-        .then((res) => res.json())
-        .then(res => {
-        const userData = res
-        console.log(userData)
-        })
-        .catch(console.error)
+      //2/13 토큰 전달 완료
+      this.props.navigation.navigate('Walkthrough', {token: token});
       })
       .catch(console.error)
 
-    
-
       this.webview.stopLoading();
-      this.props.navigation.navigate('Walkthrough');
-
+      // this.props.navigation.navigate('Walkthrough');
     }
   }
 
