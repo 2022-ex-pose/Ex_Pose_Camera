@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   Linking,
   Platform,
-  PermissionsAndroid
+  PermissionsAndroid,
+  StyleSheet
 } from 'react-native';
 
 import {Camera, useCameraDevices} from "react-native-vision-camera";
@@ -32,21 +33,67 @@ import { FilterModal } from "../";
 import Animated,{
   useSharedValue,
   useAnimatedStyle,
-  withTiming
+  withTiming,
+  set
 } from "react-native-reanimated";
 import { FlatList } from 'react-native-gesture-handler';
 import {useRoute} from "@react-navigation/native";
 
+// import RNFS from 'react-native-fs';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+
 const Home = ({ route, navigation }) => {
 
-  //const [selectOption, setSelectOption] = React.useState(constants.scan_product_option.camera)
-  const devices = useCameraDevices()
-  const device = devices.back
+  const camera = React.useRef(null);
+  const [showCamera, setShowCamera] = React.useState(false);
+  const [imageSource, setImageSource] = React.useState('file://','');
+  //플래시, 전환 hook
+  // const [flash, setFlash] = React.useState<'off' | 'on'>('off');
+  // const [cameraPosition, setCameraPosition] = React.useState<'front' | 'back'>('back');
+  // const supportsCameraFlipping = React.useMemo(() => devices.back != null && devices.front != null, [devices.back, devices.front]);
+  // const supportsFlash = device?.hasFlash ?? false;
+
+  const devices = useCameraDevices();
+  const device = devices.back;
   const [showFilterModal, setShowFilterModal] = React.useState(false)
   const {token} = route.params;
-
   //토큰 전달 확인
   // console.log(`camera ${token}`)
+
+  //카메라 플래시, 전환 기능
+  // const onFlipCameraPressed = React.useCallback(() => {
+  //   setCameraPosition((p) => (p === 'back' ? 'front' : 'back'));
+  // }, []);
+  // const onFlashPressed = React.useCallback(() => {
+  //   setFlash((f) => (f === 'off' ? 'on' : 'off'));
+  // }, []);
+
+  // const onSavePressed = React.useCallback(async () => {
+  //   try {
+  //     setSavingState('saving');
+
+  //     const hasPermission = await requestSavePermission();
+  //     if (!hasPermission) {
+  //       alert('Permission denied!', 'Vision Camera does not have permission to save the media to your camera roll.');
+  //       return;
+  //     }
+  //     await CameraRoll.save(`file://${imageSource}`);
+  //     setSavingState('saved');
+  //   } catch (e) {
+  //     const message = e instanceof Error ? e.message : JSON.stringify(e);
+  //     setSavingState('none');
+  //     alert('Failed to save!', `An unexpected error occured while trying to save your ${type}. ${message}`);
+  //   }
+  // }, [imageSource]);
+
+  const capturePhoto = async () => {
+    if (camera.current != null) {
+      const photo = await camera.current.takePhoto({});
+      setImageSource(photo.path);
+      setShowCamera(false);
+      console.log(photo.path);
+    }
+  };
   
   React.useEffect(() => {
     if (Platform.OS === 'android') {
@@ -61,7 +108,7 @@ const Home = ({ route, navigation }) => {
             },
           );
           if(granted === PermissionsAndroid.RESULTS.GRANTED){
-		    
+		    setShowCamera(true);
 	      }else {
 		    alert('Please camera permission');
 	   }
@@ -74,7 +121,6 @@ const Home = ({ route, navigation }) => {
 }
 },[]); 
 
-  
   function renderHeader() {
     return(
       <View
@@ -95,17 +141,17 @@ const Home = ({ route, navigation }) => {
       onPress={() => navigation.goBack()}
       />
 
-    <IconButton
-      icon={icons.flash}
-      iconStyle={{
-        width: 25,
-        height: 25
-      }}
-      />
+    {/* {supportsFlash && (
+          <PressableOpacity style={styles.button} onPress={onFlashPressed} disabledOpacity={0.4}>
+            <IonIcon name={flash === 'on' ? 'flash' : 'flash-off'} color="black" size={24} />
+          </PressableOpacity>
+        )}
 
-    <IconButton
-      icon={icons.cameraFlipIcon}
-      />
+    {supportsCameraFlipping && (
+          <PressableOpacity style={styles.button} onPress={onFlipCameraPressed} disabledOpacity={0.4}>
+            <IonIcon name="camera-reverse" color="black" size={24} />
+          </PressableOpacity>
+        )} */}
       </View>
     )
   }
@@ -127,11 +173,14 @@ const Home = ({ route, navigation }) => {
         }}
         >
             <Camera
+              ref={camera}
               style={{flex: 1}}
               device={device}
-              isActive={true}
+              isActive={showCamera}
               enableZoomGesture
+              photo={true}
               />
+            
         </View>
       )
     }
@@ -155,6 +204,7 @@ const Home = ({ route, navigation }) => {
         width: 40,
         height: 40
       }}
+      onPress={()=>capturePhoto()}
       />
 
     <IconButton
@@ -178,24 +228,145 @@ const Home = ({ route, navigation }) => {
           flex:1
         }}
     >
+      {showCamera ? (
+        <>
       {/* Filter */}
       {showFilterModal &&
-      <FilterModal
-      isVisible={showFilterModal}
-      onClose={() => setShowFilterModal(false)}
-      //자식 FilterModal로 token전달
-      token={token}
-      />}
+        <FilterModal
+        isVisible={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        //자식 FilterModal로 token전달
+        token={token}
+        />}
+  
+        {/*Header*/}
+        {renderHeader()}
+  
+        {renderCamera()}
+  
+        {renderFooter()}
+        </>
+      ) : (
+        <>
+        {imageSource !== '' ? (
+          <Image
+            style={styles.image}
+            source={{
+              uri: `file://${imageSource}`,
+            }}
+            />
+            
+        ) : null}
+        
+        <View style={styles.backButton}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.2)',
+                padding: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 10,
+                borderWidth: 2,
+                borderColor: '#fff',
+                width: 100,
+              }}
+              onPress={() => setShowCamera(true)}>
+              <Text style={{color: 'white', fontWeight: '500'}}>Back</Text>
+            </TouchableOpacity>
+          </View>
 
-      {/*Header*/}
-      {renderHeader()}
+          <View style={styles.buttonContainer}>
+            <View style={styles.buttons}>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: '#fff',
+                  padding: 10,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 10,
+                  borderWidth: 2,
+                  borderColor: '#77c3ec',
+                }}
+                onPress={() => setShowCamera(true)}>
+                <Text style={{color: '#77c3ec', fontWeight: '500'}}>
+                  Retake
+                </Text>
+              </TouchableOpacity>
 
-      {renderCamera()}
+              <TouchableOpacity
+                style={{
+                  backgroundColor: '#77c3ec',
+                  padding: 10,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 10,
+                  borderWidth: 2,
+                  borderColor: 'white',
+                }}
+                onPress={() => setShowCamera(true)}>
+                <Text style={{color: 'white', fontWeight: '500'}}>
+                  Use Photo
+                </Text>
+              </TouchableOpacity>
 
-      {renderFooter()}
-   
+              </View>
+        </View>
+        </>
+      )}
     </View>
-  )
+  );
+
+  
 }
+
+//사진 저장 페이지 style, 추후 정리 필요
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  button: {
+    backgroundColor: 'gray',
+  },
+  backButton: {
+    backgroundColor: 'rgba(0,0,0,0.0)',
+    position: 'absolute',
+    justifyContent: 'center',
+    width: '100%',
+    top: 0,
+    padding: 20,
+  },
+  buttonContainer: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    bottom: 0,
+    padding: 20,
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  camButton: {
+    height: 80,
+    width: 80,
+    borderRadius: 40,
+    //ADD backgroundColor COLOR GREY
+    backgroundColor: '#B2BEB5',
+
+    alignSelf: 'center',
+    borderWidth: 4,
+    borderColor: 'white',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    aspectRatio: 9 / 16,
+  },
+});
 
 export default Home;
