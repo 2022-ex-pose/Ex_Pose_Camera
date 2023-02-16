@@ -60,6 +60,7 @@ class Login extends React.Component {
       })
       .catch(console.error)
 
+      //webview 안나오게 하는거 위치 옮겨봤는데도 차이 없음, 다른 방법 알아봐야함
       this.webview.stopLoading();
       // this.props.navigation.navigate('Walkthrough');
     }

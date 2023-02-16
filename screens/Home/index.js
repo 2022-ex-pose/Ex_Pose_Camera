@@ -28,7 +28,7 @@ import {
   dummyData
 } from "../../constants";
 
-import { FilterModal } from "../";
+import { FilterModal } from "..";
 
 import Animated,{
   useSharedValue,
@@ -40,7 +40,10 @@ import { FlatList } from 'react-native-gesture-handler';
 import {useRoute} from "@react-navigation/native";
 
 // import RNFS from 'react-native-fs';
-import IonIcon from 'react-native-vector-icons/Ionicons';
+// import IonIcon from 'react-native-vector-icons/Ionicons';
+// import { PressableOpacity } from 'react-native-pressable-opacity';
+// import { SAFE_AREA_PADDING } from './Constants';
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 
 const Home = ({ route, navigation }) => {
 
@@ -52,6 +55,7 @@ const Home = ({ route, navigation }) => {
   // const [cameraPosition, setCameraPosition] = React.useState<'front' | 'back'>('back');
   // const supportsCameraFlipping = React.useMemo(() => devices.back != null && devices.front != null, [devices.back, devices.front]);
   // const supportsFlash = device?.hasFlash ?? false;
+  // const {savingState, setSavingState} = React.useState<'none' | 'saving' | 'saved'>('none');
 
   const devices = useCameraDevices();
   const device = devices.back;
@@ -68,24 +72,6 @@ const Home = ({ route, navigation }) => {
   //   setFlash((f) => (f === 'off' ? 'on' : 'off'));
   // }, []);
 
-  // const onSavePressed = React.useCallback(async () => {
-  //   try {
-  //     setSavingState('saving');
-
-  //     const hasPermission = await requestSavePermission();
-  //     if (!hasPermission) {
-  //       alert('Permission denied!', 'Vision Camera does not have permission to save the media to your camera roll.');
-  //       return;
-  //     }
-  //     await CameraRoll.save(`file://${imageSource}`);
-  //     setSavingState('saved');
-  //   } catch (e) {
-  //     const message = e instanceof Error ? e.message : JSON.stringify(e);
-  //     setSavingState('none');
-  //     alert('Failed to save!', `An unexpected error occured while trying to save your ${type}. ${message}`);
-  //   }
-  // }, [imageSource]);
-
   const capturePhoto = async () => {
     if (camera.current != null) {
       const photo = await camera.current.takePhoto({});
@@ -94,30 +80,75 @@ const Home = ({ route, navigation }) => {
       console.log(photo.path);
     }
   };
-  
-  React.useEffect(() => {
-    if (Platform.OS === 'android') {
-    const requestCameraPermission = async () => {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.CAMERA,
-            {
-              title: 'Camera Permission',
-              message: 'App needs permission for camera access',
-              buttonPositive: 'OK',
-            },
-          );
-          if(granted === PermissionsAndroid.RESULTS.GRANTED){
-		    setShowCamera(true);
-	      }else {
-		    alert('Please camera permission');
-	   }
-        } catch (err) {
-        alert('Camera permission err');
-          console.warn(err);
-        }
-      };
-      requestCameraPermission();
+
+//   React.useEffect(() => {
+//     if (Platform.OS === 'android') {
+//     const requestSavePermission = async () => {
+//         try {
+//           const granted = await PermissionsAndroid.request(
+//             PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+//             {
+//               title: 'Storage Permission',
+//               message: 'App needs permission for camera access',
+//               buttonPositive: 'OK',
+//             },
+//           );
+//           if(granted === PermissionsAndroid.RESULTS.GRANTED){
+// 		    console.log("Save permission granted")
+// 	      }else {
+// 		    alert('Please allow the permission');
+// 	   }
+//         } catch (err) {
+//         alert('Save permission err');
+//           console.warn(err);
+//         }
+//       };
+//       requestSavePermission();
+// }
+// },[]); 
+
+const onSavePressed = React.useCallback(async () => {
+  try {
+    // setSavingState('saving');
+    // const hasPermission = await requestSavePermission();
+    // if (!hasPermission) {
+    //   alert('Permission denied!', 'Vision Camera does not have permission to save the media to your camera roll.');
+    //   return;
+    // }
+    await CameraRoll.save(`file://${imageSource}`);
+    setShowCamera(true);
+    // setSavingState('saved');
+  } catch (e) {
+    const message = e instanceof Error ? e.message : JSON.stringify(e);
+    // setSavingState('none');
+    alert('Failed to save!', `An unexpected error occured while trying to save your photo. ${message}`);
+  }
+}, [imageSource]);
+
+React.useEffect(() => {
+  if (Platform.OS === 'android') {
+  const getAllPermission = async () => {
+      try {
+        PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        ]).then(result => { 
+          if(
+            result['android.permission.CAMERA'] &&
+            result['android.permission.WRITE_EXTERNAL_STORAGE'] === 'granted'
+          ) {
+            setShowCamera(true);
+          } else {
+            alert('Permissions denied', 'You need to give permissions');
+          }
+        });
+      }
+      catch (err) {
+      alert('Camera permission err');
+        console.warn(err);
+      }
+    };
+    getAllPermission();
 }
 },[]); 
 
@@ -276,7 +307,7 @@ const Home = ({ route, navigation }) => {
           </View>
 
           <View style={styles.buttonContainer}>
-            <View style={styles.buttons}>
+          <View style={styles.buttons}>
               <TouchableOpacity
                 style={{
                   backgroundColor: '#fff',
@@ -303,7 +334,7 @@ const Home = ({ route, navigation }) => {
                   borderWidth: 2,
                   borderColor: 'white',
                 }}
-                onPress={() => setShowCamera(true)}>
+                onPress={onSavePressed}>
                 <Text style={{color: 'white', fontWeight: '500'}}>
                   Use Photo
                 </Text>
@@ -366,6 +397,21 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     aspectRatio: 9 / 16,
+  },
+  saveButton: {
+    position: 'absolute',
+    bottom:35,
+    left: 35,
+    width: 40,
+    height: 40,
+  },
+  icon: {
+    textShadowColor: 'black',
+    textShadowOffset: {
+      height: 0,
+      width: 0,
+    },
+    textShadowRadius: 1,
   },
 });
 
