@@ -8,6 +8,8 @@ import Login from "./Walkthrough/Login"
 
 import FilterModal from "./Home/FilterModal"
 
+import GalleryModal from "./Home/GalleryModal"
+
 export {
     Welcome,
     Walkthrough,
@@ -16,7 +18,8 @@ export {
 
     Home,
     FilterModal,
-    Login
+    Login,
+    GalleryModal,
 }
 
 {/*안에 있어야되는건데 일단 빼옴 AuthMain,*/}

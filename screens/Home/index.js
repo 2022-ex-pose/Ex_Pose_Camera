@@ -9,7 +9,8 @@ import {
   Linking,
   Platform,
   PermissionsAndroid,
-  StyleSheet
+  StyleSheet,
+  ScrollView
 } from 'react-native';
 
 import {Camera, useCameraDevices} from "react-native-vision-camera";
@@ -29,6 +30,8 @@ import {
 } from "../../constants";
 
 import { FilterModal } from "..";
+
+import { GalleryModal } from "..";
 
 import Animated,{
   useSharedValue,
@@ -50,6 +53,7 @@ const Home = ({ route, navigation }) => {
   const camera = React.useRef(null);
   const [showCamera, setShowCamera] = React.useState(false);
   const [imageSource, setImageSource] = React.useState('file://','');
+
   //플래시, 전환 hook
   // const [flash, setFlash] = React.useState<'off' | 'on'>('off');
   // const [cameraPosition, setCameraPosition] = React.useState<'front' | 'back'>('back');
@@ -63,6 +67,39 @@ const Home = ({ route, navigation }) => {
   const {token} = route.params;
   //토큰 전달 확인
   // console.log(`camera ${token}`)
+
+  const [showGalleryModal, setShowGalleryModal] = React.useState(false)
+
+  //Permissions
+  React.useEffect(() => {
+    if (Platform.OS === 'android') {
+    const getAllPermission = async () => {
+        try {
+          PermissionsAndroid.requestMultiple([
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+          ]).then(result => { 
+            if(
+              result['android.permission.CAMERA'] &&
+              result['android.permission.WRITE_EXTERNAL_STORAGE'] &&
+              result['android.permission.READ_EXTERNAL_STORAGE']
+              === 'granted'
+            ) {
+              setShowCamera(true);
+            } else {
+              alert('Permissions denied', 'You need to give permissions');
+            }
+          });
+        }
+        catch (err) {
+        alert('Camera permission err');
+          console.warn(err);
+        }
+      };
+      getAllPermission();
+  }
+  },[]); 
 
   //카메라 플래시, 전환 기능
   // const onFlipCameraPressed = React.useCallback(() => {
@@ -80,32 +117,6 @@ const Home = ({ route, navigation }) => {
       console.log(photo.path);
     }
   };
-
-//   React.useEffect(() => {
-//     if (Platform.OS === 'android') {
-//     const requestSavePermission = async () => {
-//         try {
-//           const granted = await PermissionsAndroid.request(
-//             PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-//             {
-//               title: 'Storage Permission',
-//               message: 'App needs permission for camera access',
-//               buttonPositive: 'OK',
-//             },
-//           );
-//           if(granted === PermissionsAndroid.RESULTS.GRANTED){
-// 		    console.log("Save permission granted")
-// 	      }else {
-// 		    alert('Please allow the permission');
-// 	   }
-//         } catch (err) {
-//         alert('Save permission err');
-//           console.warn(err);
-//         }
-//       };
-//       requestSavePermission();
-// }
-// },[]); 
 
 const onSavePressed = React.useCallback(async () => {
   try {
@@ -125,32 +136,7 @@ const onSavePressed = React.useCallback(async () => {
   }
 }, [imageSource]);
 
-React.useEffect(() => {
-  if (Platform.OS === 'android') {
-  const getAllPermission = async () => {
-      try {
-        PermissionsAndroid.requestMultiple([
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        ]).then(result => { 
-          if(
-            result['android.permission.CAMERA'] &&
-            result['android.permission.WRITE_EXTERNAL_STORAGE'] === 'granted'
-          ) {
-            setShowCamera(true);
-          } else {
-            alert('Permissions denied', 'You need to give permissions');
-          }
-        });
-      }
-      catch (err) {
-      alert('Camera permission err');
-        console.warn(err);
-      }
-    };
-    getAllPermission();
-}
-},[]); 
+
 
   function renderHeader() {
     return(
@@ -229,9 +215,18 @@ React.useEffect(() => {
           zIndex: 1}}
           >
 
+      <IconButton
+      icon={icons.scan}
+      iconStyle={{
+        width: 40,
+        height: 40
+      }}
+      onPress={()=>setShowGalleryModal(true)}
+      />
+
      <IconButton
       icon={icons.cameraButton}
-      iconStyle={{
+      iconStyle={{ 
         width: 40,
         height: 40
       }}
@@ -270,6 +265,12 @@ React.useEffect(() => {
         token={token}
         />}
   
+      {showGalleryModal &&
+        <GalleryModal
+        isVisible={showGalleryModal}
+        onClose={() => setShowGalleryModal(false)}
+        />}
+
         {/*Header*/}
         {renderHeader()}
   
