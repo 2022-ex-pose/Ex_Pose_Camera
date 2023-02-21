@@ -10,6 +10,8 @@ import FilterModal from "./Home/FilterModal"
 
 import GalleryModal from "./Home/GalleryModal"
 
+import FrameModal from "./Home/FrameModal";
+
 export {
     Welcome,
     Walkthrough,
@@ -20,6 +22,7 @@ export {
     FilterModal,
     Login,
     GalleryModal,
+    FrameModal,
 }
 
 {/*안에 있어야되는건데 일단 빼옴 AuthMain,*/}

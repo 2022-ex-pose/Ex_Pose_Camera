@@ -33,6 +33,8 @@ import { FilterModal } from "..";
 
 import { GalleryModal } from "..";
 
+import { FrameModal } from "..";
+
 import Animated,{
   useSharedValue,
   useAnimatedStyle,
@@ -69,7 +71,14 @@ const Home = ({ route, navigation }) => {
   // console.log(`camera ${token}`)
 
   const [showGalleryModal, setShowGalleryModal] = React.useState(false)
+  const [showFrameModal, setShowFrameModal] = React.useState(false)
+  const [selectedFrameId, setSelectedFrameId] = React.useState('')
 
+  const loadFrameModal = (selectedFrameId) => {
+      setSelectedFrameId(selectedFrameId)
+      console.log(selectedFrameId)
+       setShowFrameModal(true)
+  }
   //Permissions
   React.useEffect(() => {
     if (Platform.OS === 'android') {
@@ -263,6 +272,7 @@ const onSavePressed = React.useCallback(async () => {
         onClose={() => setShowFilterModal(false)}
         //자식 FilterModal로 token전달
         token={token}
+        loadFrameModal={loadFrameModal}
         />}
   
       {showGalleryModal &&
@@ -270,6 +280,15 @@ const onSavePressed = React.useCallback(async () => {
         isVisible={showGalleryModal}
         onClose={() => setShowGalleryModal(false)}
         />}
+
+    {showFrameModal &&
+      <FrameModal
+        isVisible={showFrameModal}
+        onClose={() => setShowFrameModal(false)}
+        //자식 FramerModal로 frameId전달
+        selectedFrameId={selectedFrameId}
+        />
+      } 
 
         {/*Header*/}
         {renderHeader()}

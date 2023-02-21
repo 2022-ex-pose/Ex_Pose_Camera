@@ -17,28 +17,32 @@ import { FlatList } from 'react-native-gesture-handler';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { FrameModal } from "..";
+
 const BaseUrl = "http://52.79.250.39:8080";
 const userRecListApi = `${BaseUrl}/frame/recommend`;
 const userMyListApi = `${BaseUrl}/frame/like`
-const frameUrl = `${BaseUrl}/frame?category=`;
+const categoryUrl = `${BaseUrl}/frame?category=`;
 
-// 토큰 받기 {token}
-const FilterModal = ({ isVisible, onClose, token}) => {
+// 토큰 받기 token, loadFrameModal 사용해서 selectedFrameId넘김
+const FilterModal = ({ isVisible, onClose, token, loadFrameModal }) => {
 
   const modalAnimatedValue = React.useRef(new Animated.Value(0)).current
   const [showFilterModal, setShowFilterModal] = React.useState(isVisible)
   const [data, setData] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
   //selected 시도중
-  const [selectedFrameId, setSelectedFrameId] = React.useState('half');
+  const [selectedCategory, setSelectedCategory] = React.useState('half');
   //const selectedframeList = React.useState(null);
+
+  const [showFrameModal, setShowFrameModal] = React.useState('');
 
   // 토큰 전달 확인
   // console.log(`filter ${token}`)
 
   // useEffect(()=> {
-  // frameList(selectedFrameId)
-  // },[selectedFrameId])
+  // frameList(selectedCategory)
+  // },[selectedCategory])
   //여기까지
 
   useEffect(()=> {
@@ -64,7 +68,6 @@ const FilterModal = ({ isVisible, onClose, token}) => {
 
   const frameList = (category) => {
     
-
     useEffect(() => {
       setIsLoading(true);
       getAllFrames(category);
@@ -109,7 +112,7 @@ const FilterModal = ({ isVisible, onClose, token}) => {
       }
 
       else {
-        fetch(`${frameUrl}${selectedCategory}`)
+        fetch(`${categoryUrl}${selectedCategory}`)
         .then((res) => res.json())
         .then((resJson)=>{setData(resJson.data)})
         .catch(console.error)
@@ -119,21 +122,26 @@ const FilterModal = ({ isVisible, onClose, token}) => {
     }
 
     const renderFrame = ({item}) => {
+       
       return (
+
         <View>
+          <TouchableOpacity
+          onPress={()=> loadFrameModal(item.frameId)}>
           <Image
           source={{uri: item.framePath}}
           style={{width:150,
           height:150}}
           resizeMode= 'contain'
           />
+          </TouchableOpacity>
           <View>
             <Text> {`${item.frameName}`} </Text>
           </View>
 
         </View>
-
       )
+      
     }
     return (
       <SafeAreaView>
@@ -178,7 +186,7 @@ const FilterModal = ({ isVisible, onClose, token}) => {
           color: COLORS.white == item.id ? COLORS.primary : COLORS.black,
           ...FONTS.h3
         }}
-        onPress={()=>setSelectedFrameId(item.category)}
+        onPress={()=>setSelectedCategory(item.category)}
         >
           {item.name}
           
@@ -200,6 +208,8 @@ const FilterModal = ({ isVisible, onClose, token}) => {
             flex: 1
           }}
           >
+            
+        
             <TouchableWithoutFeedback
               onPress={() => setShowFilterModal(false)}>
                 <View
@@ -225,7 +235,7 @@ const FilterModal = ({ isVisible, onClose, token}) => {
               }}>
           <View>
             {renderFilterOption()}
-            {frameList(selectedFrameId)}
+            {frameList(selectedCategory)}
           </View>
             </Animated.View>
 
@@ -233,6 +243,8 @@ const FilterModal = ({ isVisible, onClose, token}) => {
 
           </View>
       </Modal>
+
+      
   )
 }
 
