@@ -20,21 +20,33 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconButton } from "../../components";
 
 
-const FrameModal = ({ isVisible, onClose }) => {
+const FrameModal = ({ isVisible, onClose, selectedFrameId }) => {
 
   const modalAnimatedValue = React.useRef(new Animated.Value(0)).current
   const [showFrameModal, setShowFrameModal] = React.useState(isVisible)
 
-  function FrameLoad(frameId) {
+  const frameId = selectedFrameId
+    
+  console.log(frameId)
+  const BaseUrl = "http://52.79.250.39:8080";
+  const frameUrl = `${BaseUrl}/frame/{frameId}?frameId=${frameId}`;
+  const [framePath, setFramePath] = React.useState('')
+  const [data, setData] = React.useState([]);
+  // const [isLoading, setIsLoading] = React.useState(false);
   
-    const BaseUrl = "http://52.79.250.39:8080";
-    const frameUrl = `${BaseUrl}/frame/{frameId}?frameId=${frameId}`;
+React.useEffect(()=> {
+  fetch(`${frameUrl}`)
+  .then((res) => res.json())
+  .then((resJson)=>{setData(resJson.data)},
+  // setFramePath(data.framePath),
+  // console.log(framePath)
+  ) 
+  .catch(console.error)
+  // .finally(() => setIsLoading(false));
+},[])
 
-    fetch(`${BaseUrl}${frameUrl}`)
-    .then((res) => res.json())
-    .then((resJson)=>{setData(resJson.data)})
-    .catch(console.error)
-    .finally(() => setIsLoading(false));
+  
+  function FrameLoad() {
 
     return (
       <View>     
@@ -44,17 +56,19 @@ const FrameModal = ({ isVisible, onClose }) => {
         onPress={() => setShowFrameModal(false)}
         />
         <Image
-          source={{uri: item.framePath}}
-          style={{width: 300,
-          height: 300}}
+          source={{uri: data.framePath}}
+          style={{width: 400,
+          height: 600}}
           resizeMode= 'contain'
           />
         </View>
     )
-  }
+
+}
+
   const modalY = modalAnimatedValue.interpolate({
     inputRange: [0,1],
-    outputRange: [SIZES.height, SIZES.height-500]
+    outputRange: [SIZES.height, SIZES.height-700]
   });
 
   useEffect(()=> {
@@ -92,9 +106,9 @@ const FrameModal = ({ isVisible, onClose }) => {
                 left: 0,
                 top: modalY,
                 width: "100%",
-                height: "100%",
+                height: "80%",
                 padding: SIZES.padding,
-                backgroundColor: grey,
+                backgroundColor: COLORS.lightGrey20
               }}>
           <View>
           {FrameLoad()}

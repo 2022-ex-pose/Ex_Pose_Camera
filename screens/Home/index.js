@@ -78,6 +78,7 @@ const Home = ({ route, navigation }) => {
       setSelectedFrameId(selectedFrameId)
       console.log(selectedFrameId)
        setShowFrameModal(true)
+       setShowFilterModal(false)
   }
   //Permissions
   React.useEffect(() => {

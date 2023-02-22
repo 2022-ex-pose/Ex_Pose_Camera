@@ -121,7 +121,7 @@ const FilterModal = ({ isVisible, onClose, token, loadFrameModal }) => {
 
     }
 
-    const renderFrame = ({item}) => {
+    const renderCategory = ({item}) => {
        
       return (
 
@@ -152,7 +152,7 @@ const FilterModal = ({ isVisible, onClose, token, loadFrameModal }) => {
             showsHorizontalScrollIndicator={false}
             data={data}
             keyExtractor={item => `key-${item.frameId}`}
-            renderItem={renderFrame}
+            renderItem={renderCategory}
             />
           )
         }
