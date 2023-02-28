@@ -78,13 +78,14 @@ const Home = ({ route, navigation }) => {
   const [getFrameUrl, setGetFrameUrl] = React.useState(false)
   // const [frameUrl, setFrameUrl] = React.useState('')
 
+
   const loadFrameModal = (selectedFrameId) => {
       setSelectedFrameId(selectedFrameId)
       console.log(selectedFrameId)
        setShowFrameModal(true)
       //  setShowFilterModal(false)
   }
-  
+
   //Permissions
   React.useEffect(() => {
     if (Platform.OS === 'android') {
@@ -229,19 +230,6 @@ const onSavePressed = React.useCallback(async () => {
         />
         </View>
       } 
-         {/* {getFrameUrl && 
-         <View
-         style= {{
-          position:'absolute',
-          top: 0 ,
-          left: 0,
-          right: 0,
-          bottom: 0
-         }}>
-        <showFrame/>
-          </View>
-          } */}
-            
         </View>
       )
     }
@@ -315,16 +303,6 @@ const onSavePressed = React.useCallback(async () => {
         isVisible={showGalleryModal}
         onClose={() => setShowGalleryModal(false)}
         />}
-
-    {/* {showFrameModal &&
-      <FrameModal
-        isVisible={showFrameModal}
-        onClose={() => setShowFrameModal(false)}
-        //자식 FramerModal로 frameId전달
-        selectedFrameId={selectedFrameId}
-        showFrame={showFrame}
-        />
-      }  */}
 
         {/*Header*/}
         {renderHeader()}

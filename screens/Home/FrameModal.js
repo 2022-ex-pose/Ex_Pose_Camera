@@ -30,14 +30,14 @@ const FrameModal = ({ isVisible, onClose, selectedFrameId, showFrame }) => {
   console.log(frameId)
   const BaseUrl = "http://52.79.250.39:8080";
   const frameUrl = `${BaseUrl}/frame/{frameId}?frameId=${frameId}`;
-  const [framePath, setFramePath] = React.useState('')
+  // const [framePath, setFramePath] = React.useState('')
   const [data, setData] = React.useState([]);
   // const [isLoading, setIsLoading] = React.useState(false);
   
 React.useEffect(()=> {
   fetch(`${frameUrl}`)
   .then((res) => res.json())
-  .then((resJson)=>{setData(resJson.data),setFramePath(resJson.data.framePath)}
+  .then((resJson)=>{setData(resJson.data)}
   // console.log(framePath)
   ) 
   .catch(console.error)
@@ -53,14 +53,15 @@ React.useEffect(()=> {
         top: 0,
         left: 0,
         right: 0,
-        bottom: 0}}>     
+        bottom: 0}}>
+
       {/*close*/}
       <IconButton
         icon={icons.close}
-        onPress={() => setShowFrameModal(false)}
+        onPress={() => onClose()}
         />
         <Image
-          source={{uri: framePath}}
+          source={{uri: data.framePath}}
           style={{width: 400,
           height: 600}}
           resizeMode= 'contain'
