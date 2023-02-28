@@ -37,6 +37,8 @@ const FilterModal = ({ isVisible, onClose, token, loadFrameModal }) => {
 
   const [showFrameModal, setShowFrameModal] = React.useState('');
 
+  // const [likeState, setLikeState] = React.useState('');
+
   // 토큰 전달 확인
   // console.log(`filter ${token}`)
 
@@ -68,13 +70,10 @@ const FilterModal = ({ isVisible, onClose, token, loadFrameModal }) => {
 
   const frameList = (category) => {
     
-    useEffect(() => {
+     useEffect(() => {
       setIsLoading(true);
       getAllFrames(category);
-      return() => {
-        
-      }
-    },[]);
+    },[selectedCategory]);
 
     const getAllFrames = (selectedCategory) => {
 
@@ -122,6 +121,39 @@ const FilterModal = ({ isVisible, onClose, token, loadFrameModal }) => {
     }
 
     const renderCategory = ({item}) => {
+
+      const userLikeState = `${BaseUrl}/frame/like?frameId=`
+      const userUnlikeState = `${BaseUrl}/frame/like/cancel?frameId=`
+
+
+      const likeUpdate = (likeState, frameId) => {
+      // console.log(likeState)
+      // console.log(frameId)
+
+       if(likeState===true) {
+        console.log("true state load success")
+        fetch(`${userUnlikeState}${frameId}`,{
+          method : "PATCH",
+          headers : {
+              Authorization : `Bearer ${token}`
+          }
+          })
+      // .then (console.log("like to unlike"))
+       .catch(console.error)
+       }
+
+       if(likeState===false) {
+        console.log("false state load success")
+        fetch(`${userLikeState}${frameId}`,{
+          method : "PATCH",
+          headers : {
+              Authorization : `Bearer ${token}`
+          }
+          })
+       // .then (console.log("unlike to like"))
+      .catch(console.error)
+       }
+      }
        
       return (
 
@@ -135,6 +167,27 @@ const FilterModal = ({ isVisible, onClose, token, loadFrameModal }) => {
           resizeMode= 'contain'
           />
           </TouchableOpacity>
+          
+          <TouchableOpacity
+          style={{
+            position: 'absolute',
+            top: '15%',
+            left: 7,
+          }}
+          onPress={()=> likeUpdate(item.like_state, item.frameId)}>
+            
+          {/* 아이콘 수정해야함 */}
+          <Image
+          source={item.like_state ? icons.checkmark : icons.cameraButton}
+          resizeMode="contain"
+          style={{
+            width: 20,
+            height: 20,
+          }}
+          />
+
+            </TouchableOpacity>
+          
           <View>
             <Text> {`${item.frameName}`} </Text>
           </View>

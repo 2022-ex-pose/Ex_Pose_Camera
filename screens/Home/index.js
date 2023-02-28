@@ -50,6 +50,8 @@ import {useRoute} from "@react-navigation/native";
 // import { SAFE_AREA_PADDING } from './Constants';
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 
+// import { Svg, Defs, Mask } from "react-native-svg";
+
 const Home = ({ route, navigation }) => {
 
   const camera = React.useRef(null);
@@ -73,13 +75,16 @@ const Home = ({ route, navigation }) => {
   const [showGalleryModal, setShowGalleryModal] = React.useState(false)
   const [showFrameModal, setShowFrameModal] = React.useState(false)
   const [selectedFrameId, setSelectedFrameId] = React.useState('')
+  const [getFrameUrl, setGetFrameUrl] = React.useState(false)
+  // const [frameUrl, setFrameUrl] = React.useState('')
 
   const loadFrameModal = (selectedFrameId) => {
       setSelectedFrameId(selectedFrameId)
       console.log(selectedFrameId)
        setShowFrameModal(true)
-       setShowFilterModal(false)
+      //  setShowFilterModal(false)
   }
+  
   //Permissions
   React.useEffect(() => {
     if (Platform.OS === 'android') {
@@ -207,6 +212,35 @@ const onSavePressed = React.useCallback(async () => {
               enableZoomGesture
               photo={true}
               />
+      
+      {showFrameModal &&
+      <View
+      style= {{
+        position:'absolute',
+        top: 0 ,
+        left: 0,
+        right: 0,
+        bottom: 0
+       }}>
+      <FrameModal
+        isVisible={showFrameModal}
+        onClose={() => setShowFrameModal(false)}
+        selectedFrameId={selectedFrameId}
+        />
+        </View>
+      } 
+         {/* {getFrameUrl && 
+         <View
+         style= {{
+          position:'absolute',
+          top: 0 ,
+          left: 0,
+          right: 0,
+          bottom: 0
+         }}>
+        <showFrame/>
+          </View>
+          } */}
             
         </View>
       )
@@ -282,14 +316,15 @@ const onSavePressed = React.useCallback(async () => {
         onClose={() => setShowGalleryModal(false)}
         />}
 
-    {showFrameModal &&
+    {/* {showFrameModal &&
       <FrameModal
         isVisible={showFrameModal}
         onClose={() => setShowFrameModal(false)}
         //자식 FramerModal로 frameId전달
         selectedFrameId={selectedFrameId}
+        showFrame={showFrame}
         />
-      } 
+      }  */}
 
         {/*Header*/}
         {renderHeader()}
