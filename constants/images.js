@@ -40,6 +40,10 @@ const walkthrough_04_04 = require('../assets/images/walkthrough/walkthrough_04_0
 // Dummy
 const luggage_01 = require('../assets/images/dummy/luggage_01.png')
 
+// Social Login
+const kakao_login_large_wide = require('../assets/images/kakao_login_large_wide.png')
+
+
 export default {
     banner01,
     banner02,
@@ -80,5 +84,7 @@ export default {
     walkthrough_04_03,
     walkthrough_04_04,
 
-    luggage_01
+    luggage_01,
+
+    kakao_login_large_wide
 }

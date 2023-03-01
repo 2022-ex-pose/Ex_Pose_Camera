@@ -81,6 +81,12 @@ export const COLORS = {
     // Shadow
     shadow: 'rgba(138, 149, 158, 1)',
     shadow08: 'rgba(138, 149, 158, 0.08)',
+
+    //ExPose
+    bgMain: 'rgba(37, 27, 55, 1)',
+    txtMain: 'rgba(255, 202, 202, 1)',
+    txtGrey: 'rgba(166, 166, 166, 1)',
+    selected: 'rgba(240, 255, 151, 1)'
 }
 
 export const SIZES = {
