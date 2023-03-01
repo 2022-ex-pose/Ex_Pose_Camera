@@ -85,31 +85,31 @@ const Walkthrough = ({route, navigation}) => {
     //API정보 이용 시
     const [userName, setUserName] = React.useState("Ex.Pose");
 
-    // //토큰 전달 완료
-    // const {token} = route.params;
+    //토큰 전달 완료
+    const {token} = route.params;
 
-    // //User정보 호출 완료
-    // const userNameInfo = () => {
+    //User정보 호출 완료
+    const userNameInfo = () => {
 
-    //     const BaseUrl = "http://52.79.250.39:8080";
-    //     const userInfoApi = `${BaseUrl}/user/me`;
+        const BaseUrl = "http://52.79.250.39:8080";
+        const userInfoApi = `${BaseUrl}/user/me`;
 
-    //     //사용자 데이터 fetch 정보 호출 완료
-    //     fetch(`${userInfoApi}`, {
-    //             method : "GET",
-    //             headers : {
-    //                 Authorization : `Bearer ${token}`
-    //             }
-    //             }) 
-    //             .then((res) => res.json())
-    //             .then(res => {
-    //             setUserName(res.nickname)
-    //             console.log(userName)
-    //             })
-    //             .catch(console.error)
-    // }
+        //사용자 데이터 fetch 정보 호출 완료
+        fetch(`${userInfoApi}`, {
+                method : "GET",
+                headers : {
+                    Authorization : `Bearer ${token}`
+                }
+                }) 
+                .then((res) => res.json())
+                .then(res => {
+                setUserName(res.nickname)
+                console.log(userName)
+                })
+                .catch(console.error)
+    }
 
-    // userNameInfo();
+    userNameInfo();
 
     const scrollX = React.useRef(new Animated.Value(0)).current;
 
