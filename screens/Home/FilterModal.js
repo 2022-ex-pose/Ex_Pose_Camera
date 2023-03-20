@@ -12,6 +12,8 @@ import {
 
 import { SIZES, icons, dummyData } from "../../constants";
 
+import { CateButton } from "../../components"; 
+
 import { FlatList } from 'react-native-gesture-handler';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -242,20 +244,12 @@ const FilterModal = ({ isVisible, onClose, token, loadFrameModal, BaseUrl }) => 
             
         > 
         {/* 카테고리 버튼 */}
-      <Text
-        style={{backgroundColor:'#FFCACA', 
-        textAlign: 'center',
-        fontWeight: 'bold',
-        borderRadius:5,
-        width:65,
-        height:23,
-        // color: COLORS.white == item.id ? COLORS.primary : '#000000',
-        // ...FONTS.h3
-      }}
+      <CateButton
+      label={item.name}
         onPress={()=>setSelectedCategory(item.category)}
-        >
-        {item.name}
-        </Text>
+        />
+        {/* {item.name}
+        </TextButton> */}
         </TouchableOpacity>
         )}
       />

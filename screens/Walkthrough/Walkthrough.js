@@ -251,8 +251,6 @@ const Walkthrough = ({route, navigation}) => {
     //토큰 전달
     const {token} = route.params;
 
-
-
     const scrollX = React.useRef(new Animated.Value(0)).current;
 
     const Dots = () => {
