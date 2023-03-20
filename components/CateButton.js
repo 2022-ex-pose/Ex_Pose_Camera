@@ -23,9 +23,12 @@ const CateButton = ({
             disabled={disabled}
             onPress={onPress}
         > 
-            <Text style={{ color: '#636363', ...FONTS.h3, ...labelStyle,
-          marginHorizontal: 3,
-          marginVertical: 2 }}>
+            <Text style={{ color: '#636363', ...FONTS.h4, ...labelStyle,
+          paddingHorizontal:10,
+        //   marginHorizontal: 3,
+        //   marginVertical: 2
+        paddingVertical: 2
+           }}>
                 {label}
             </Text>
         </TouchableOpacity>
